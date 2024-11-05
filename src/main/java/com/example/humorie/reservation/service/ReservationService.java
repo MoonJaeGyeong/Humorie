@@ -45,7 +45,7 @@ public class ReservationService {
     private final static int RESERVATION_END_TIME = 19;
 
     public CreateReservationResDto createReservation(PrincipalDetails principal, CreateReservationReq createReservationReq) {
-        Counselor counselor = counselorRepository.findById(createReservationReq.getCounselorId())
+        Counselor counselor = counselorRepository.findById(createReservationReq.counselorId())
                 .orElseThrow(() -> new ErrorException(ErrorCode.NON_EXIST_COUNSELOR));
 
         if(principal == null){
@@ -67,15 +67,15 @@ public class ReservationService {
 
         int totalPoints = totalEarnedPoints - totalSpentPoints;
 
-        if(totalPoints < createReservationReq.getPoint()){
+        if(totalPoints < createReservationReq.point()){
             throw new ErrorException(ErrorCode.EXCEED_POINT);
         }
 
         // 임시 결제내역 생성
         Payment payment = Payment.builder()
-                .price(createReservationReq.getPrice())
-                .point(createReservationReq.getPoint())
-                .finalPrice(createReservationReq.getFinalPrice())
+                .price(createReservationReq.price())
+                .point(createReservationReq.point())
+                .finalPrice(createReservationReq.finalPrice())
                 .status(PaymentStatus.READY)
                 .build();
 
@@ -86,10 +86,10 @@ public class ReservationService {
                 .counselor(counselor)
                 .payment(payment)
                 .reservationUid(UUID.randomUUID().toString())
-                .counselContent(createReservationReq.getCounselContent())
-                .counselDate(createReservationReq.getCounselDate())
-                .counselTime(createReservationReq.getCounselTime())
-                .location(createReservationReq.getLocation())
+                .counselContent(createReservationReq.counselContent())
+                .counselDate(createReservationReq.counselDate())
+                .counselTime(createReservationReq.counselTime())
+                .location(createReservationReq.location())
                 .build();
 
         reservationRepository.save(reservation);

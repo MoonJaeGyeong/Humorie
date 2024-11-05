@@ -6,22 +6,14 @@ import lombok.Getter;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-@Getter
-public class CreateReservationReq {
-
-    private Long counselorId;
-
-    private String location;
-
-    private String counselContent;
-
-    private LocalDate counselDate;
-
-    private LocalTime counselTime;
-
-    private Integer point;
-
-    private Integer price;
-
-    private Integer finalPrice;
+public record CreateReservationReq(
+        Long counselorId,
+        String location,
+        String counselContent,
+        LocalDate counselDate,
+        LocalTime counselTime,
+        Integer point,
+        Integer price,
+        Integer finalPrice
+) {
 }
