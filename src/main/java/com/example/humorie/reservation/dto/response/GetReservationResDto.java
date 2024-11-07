@@ -5,14 +5,8 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class GetReservationResDto {
-    String ReservationUid;
-
-    String counselorName;
-
-    String buyerName;
-
-    String buyerEmail;
-
-    Integer finalPrice;
-}
+public record GetReservationResDto( String ReservationUid,
+                                    String counselorName,
+                                    String buyerEmail,
+                                    Integer finalPrice,
+                                    String buyerName) { }
