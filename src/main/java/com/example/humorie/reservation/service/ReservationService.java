@@ -48,10 +48,6 @@ public class ReservationService {
         Counselor counselor = counselorRepository.findById(createReservationReq.counselorId())
                 .orElseThrow(() -> new ErrorException(ErrorCode.NON_EXIST_COUNSELOR));
 
-        if(principal == null){
-            throw new ErrorException(ErrorCode.NONE_EXIST_USER);
-        }
-
         AccountDetail account = principal.getAccountDetail();
 
         List<Point> points = pointRepository.findByAccount(account);
@@ -81,16 +77,7 @@ public class ReservationService {
 
         paymentRepository.save(payment);
 
-        Reservation reservation = Reservation.builder()
-                .account(account)
-                .counselor(counselor)
-                .payment(payment)
-                .reservationUid(UUID.randomUUID().toString())
-                .counselContent(createReservationReq.counselContent())
-                .counselDate(createReservationReq.counselDate())
-                .counselTime(createReservationReq.counselTime())
-                .location(createReservationReq.location())
-                .build();
+        Reservation reservation = createReservationReq.toEntity(account, counselor, payment);
 
         reservationRepository.save(reservation);
 
