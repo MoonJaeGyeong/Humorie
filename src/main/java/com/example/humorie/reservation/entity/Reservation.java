@@ -5,6 +5,7 @@ import com.example.humorie.consultant.counselor.entity.Counselor;
 import com.example.humorie.payment.entity.Payment;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDate;
@@ -24,7 +25,7 @@ public class Reservation {
 
     private String reservationUid; // 예약 번호
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
     private AccountDetail account;
 
@@ -33,7 +34,7 @@ public class Reservation {
     @Setter
     private Payment payment;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "counselor_id")
     private Counselor counselor;
 

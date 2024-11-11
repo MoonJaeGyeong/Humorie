@@ -39,7 +39,7 @@ public class ReservationController {
     @Operation(summary = "상담 예약 전체 조회")
     @GetMapping("")
     public ErrorResponse<List<ReservationDto>> getReservations(@AuthenticationPrincipal PrincipalDetails principal){
-        List<ReservationDto> response = reservationService.getReservations(principal);
+        List<ReservationDto> response = reservationService.getReservations(principal.getUsername());
 
         return new ErrorResponse<>(response);
     }

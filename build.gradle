@@ -40,6 +40,12 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
 
+	// Querydsl-JPA
+	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+	annotationProcessor("com.querydsl:querydsl-apt:5.0.0:jakarta")
+	annotationProcessor("jakarta.persistence:jakarta.persistence-api")
+	annotationProcessor("jakarta.annotation:jakarta.annotation-api")
+
 	// 아임포트 관련 //
 	implementation group: 'com.github.iamport', name: 'iamport-rest-client-java', version: '0.2.22'
 	implementation group: 'com.squareup.retrofit2', name: 'adapter-rxjava2', version: '2.9.0'
