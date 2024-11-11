@@ -18,16 +18,16 @@ import com.example.humorie.reservation.dto.response.AvailableReservationTimesRes
 import com.example.humorie.reservation.dto.response.CreateReservationResDto;
 import com.example.humorie.reservation.dto.response.GetReservationResDto;
 import com.example.humorie.reservation.entity.Reservation;
+import com.example.humorie.reservation.repository.CustomReservationRepository;
 import com.example.humorie.reservation.repository.ReservationRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -84,24 +84,12 @@ public class ReservationService {
         return new CreateReservationResDto(reservation.getReservationUid());
     }
 
-    public List<ReservationDto> getReservations(PrincipalDetails principal) {
-        if (principal == null)
-            throw new ErrorException(ErrorCode.NONE_EXIST_USER);
-
-        List<Reservation> reservations = reservationRepository.findAllByAccount_EmailOrderByCreatedAtDesc(principal.getUsername());
-        List<ReservationDto> reservationDtos = reservations.stream()
-                .map(reservation -> new ReservationDto(
-                        reservation.getId(),
-                        reservation.getCounselor().getName(),
-                        reservation.getIsOnline(),
-                        reservation.getLocation(),
-                        reservation.getCounselDate(),
-                        reservation.getCounselTime(),
-                        reservation.getCreatedAt()
-                ))
+    @Transactional(readOnly = true)
+    public List<ReservationDto> getReservations(String userName) {
+        List<Reservation> reservations = reservationRepository.findAllByAccountEmail(userName);
+        return reservations.stream()
+                .map(ReservationDto::from)
                 .collect(Collectors.toList());
-
-        return reservationDtos;
     }
 
     public GetReservationResDto getReservation(String uid){
