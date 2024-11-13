@@ -6,8 +6,7 @@ import com.example.humorie.consultant.counselor.entity.Counselor;
 import com.example.humorie.consultant.counselor.repository.CounselorRepository;
 import com.example.humorie.global.exception.ErrorCode;
 import com.example.humorie.global.exception.ErrorException;
-import com.example.humorie.account.entity.Point;
-import com.example.humorie.mypage.repository.PointRepository;
+import com.example.humorie.mypage.service.PointService;
 import com.example.humorie.payment.entity.Payment;
 import com.example.humorie.payment.entity.PaymentStatus;
 import com.example.humorie.payment.repository.PaymentRepository;
@@ -18,7 +17,6 @@ import com.example.humorie.reservation.dto.response.AvailableReservationTimesRes
 import com.example.humorie.reservation.dto.response.CreateReservationResDto;
 import com.example.humorie.reservation.dto.response.GetReservationResDto;
 import com.example.humorie.reservation.entity.Reservation;
-import com.example.humorie.reservation.repository.CustomReservationRepository;
 import com.example.humorie.reservation.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -37,7 +35,7 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final CounselorRepository counselorRepository;
     private final PaymentRepository paymentRepository;
-    private final PointRepository pointRepository;
+    private final PointService pointService;
 
     private final static int MAX_DAILY_RESERVATIONS = 10;
     private final static int MAX_RESERVATION_DATE = 14; // 2주
@@ -49,19 +47,7 @@ public class ReservationService {
                 .orElseThrow(() -> new ErrorException(ErrorCode.NON_EXIST_COUNSELOR));
 
         AccountDetail account = principal.getAccountDetail();
-
-        List<Point> points = pointRepository.findByAccount(account);
-        int totalEarnedPoints = points.stream()
-                .filter(t -> t.getType().equals("earn"))
-                .mapToInt(Point::getPoints)
-                .sum();
-
-        int totalSpentPoints = points.stream()
-                .filter(t -> t.getType().equals("spend"))
-                .mapToInt(Point::getPoints)
-                .sum();
-
-        int totalPoints = totalEarnedPoints - totalSpentPoints;
+        int totalPoints = pointService.getTotalPoints(principal).getTotalPoints();
 
         if(totalPoints < createReservationReq.point()){
             throw new ErrorException(ErrorCode.EXCEED_POINT);
@@ -76,9 +62,7 @@ public class ReservationService {
                 .build();
 
         paymentRepository.save(payment);
-
         Reservation reservation = createReservationReq.toEntity(account, counselor, payment);
-
         reservationRepository.save(reservation);
 
         return new CreateReservationResDto(reservation.getReservationUid());
@@ -94,16 +78,10 @@ public class ReservationService {
 
     public GetReservationResDto getReservation(String uid){
 
-        Reservation reservation = reservationRepository.findReservationByReservationUid(uid)
+        Reservation reservation = reservationRepository.findByReservationUid(uid)
                 .orElseThrow(() -> new ErrorException(ErrorCode.NONE_EXIST_RESERVATION));
 
-        return GetReservationResDto.builder()
-                .ReservationUid(reservation.getReservationUid())
-                .buyerEmail(reservation.getAccount().getEmail())
-                .buyerName(reservation.getAccount().getName())
-                .counselorName(reservation.getCounselor().getName())
-                .finalPrice(reservation.getPayment().getFinalPrice())
-                .build();
+        return GetReservationResDto.from(reservation);
     }
 
     public AvailableReservationDatesResDto getAvailableReservationDate(Long counselorId){
