@@ -1,27 +1,25 @@
 package com.example.humorie.reservation.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
+import com.example.humorie.account.entity.AccountDetail;
+import com.example.humorie.consultant.counselor.entity.Counselor;
+import com.example.humorie.payment.entity.Payment;
+import com.example.humorie.reservation.entity.Reservation;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-@Getter
-public class CreateReservationReq {
-
-    private Long counselorId;
-
-    private String location;
-
-    private String counselContent;
-
-    private LocalDate counselDate;
-
-    private LocalTime counselTime;
-
-    private Integer point;
-
-    private Integer price;
-
-    private Integer finalPrice;
+public record CreateReservationReq(
+        Long counselorId,
+        Boolean isOnline,
+        String location,
+        String counselContent,
+        LocalDate counselDate,
+        LocalTime counselTime,
+        Integer point,
+        Integer price,
+        Integer finalPrice
+) {
+    public Reservation toEntity(AccountDetail account, Counselor counselor, Payment payment){
+        return  Reservation.createReservation(account,counselor,payment, isOnline,location, counselContent, counselDate, counselTime);
+    }
 }

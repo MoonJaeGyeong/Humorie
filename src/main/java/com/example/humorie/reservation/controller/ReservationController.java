@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,7 +39,7 @@ public class ReservationController {
     @Operation(summary = "상담 예약 전체 조회")
     @GetMapping("")
     public ErrorResponse<List<ReservationDto>> getReservations(@AuthenticationPrincipal PrincipalDetails principal){
-        List<ReservationDto> response = reservationService.getReservations(principal);
+        List<ReservationDto> response = reservationService.getReservations(principal.getUsername());
 
         return new ErrorResponse<>(response);
     }

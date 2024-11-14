@@ -5,11 +5,13 @@ import com.example.humorie.consultant.counselor.entity.Counselor;
 import com.example.humorie.payment.entity.Payment;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.UUID;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -23,7 +25,7 @@ public class Reservation {
 
     private String reservationUid; // 예약 번호
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
     private AccountDetail account;
 
@@ -32,7 +34,7 @@ public class Reservation {
     @Setter
     private Payment payment;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "counselor_id")
     private Counselor counselor;
 
@@ -51,7 +53,7 @@ public class Reservation {
     private LocalDateTime createdAt;
 
     @Builder
-    public Reservation(AccountDetail account, Counselor counselor, Payment payment, String reservationUid, Boolean isOnline,
+    private Reservation(AccountDetail account, Counselor counselor, Payment payment, String reservationUid, Boolean isOnline,
                        String location, String counselContent, LocalDate counselDate, LocalTime counselTime) {
         this.account = account;
         this.counselor = counselor;
@@ -63,6 +65,21 @@ public class Reservation {
         this.counselDate = counselDate;
         this.counselTime = counselTime;
         this.createdAt = LocalDateTime.now();
+    }
+
+    public static Reservation createReservation(AccountDetail account, Counselor counselor, Payment payment, Boolean isOnline,
+                                                String location, String counselContent, LocalDate counselDate, LocalTime counselTime){
+        return Reservation.builder()
+                .account(account)
+                .counselor(counselor)
+                .payment(payment)
+                .reservationUid(UUID.randomUUID().toString())
+                .isOnline(isOnline)
+                .location(location)
+                .counselContent(counselContent)
+                .counselDate(counselDate)
+                .counselTime(counselTime)
+                .build();
     }
 
 
