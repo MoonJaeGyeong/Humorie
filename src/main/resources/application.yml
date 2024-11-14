@@ -1,0 +1,55 @@
+spring:
+  application:
+    name: humorie
+
+  datasource:
+    hikari:
+      maximum-pool-size: 4
+    url: jdbc:postgresql://localhost:5432/humorie
+    username: postgres
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+
+  jpa:
+    database: postgresql
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+jwt:
+  secret: ${JWT_SECRET_KEY}
+
+springdoc:
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+  swagger-ui:
+    path: /swagger-ui.html
+    disable-swagger-default-url: true
+
+
+portOne :
+  api: 4856686155132082 # 테스트 용 추후 배포 시 숨길 예정
+  secret: NXcRVMP9sclmOP43hne7FMwalOzsjIUmsReyPPbTcYqlx4Noj0iYrkU0BfDnKXtFVoyI0FP7MTyS5sDs # 테스트 용 추후 배포 시 숨길 예정
+
+
+#logging:
+#  level:
+#    root: DEBUG
